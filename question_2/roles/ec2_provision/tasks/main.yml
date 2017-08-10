@@ -1,0 +1,43 @@
+---
+
+- name: Create IAM role with custom trust relationship
+  iam:
+    aws_access_key: "{{ aws_access_key }}"
+    aws_secret_key: "{{ aws_secret_key }}"
+    iam_type: role
+    name: "{{ s3_role_name }}"
+    state: present
+    trust_policy:
+      Version: '2012-10-17'
+      Statement:
+      - Action: sts:AssumeRole
+        Effect: Allow
+        Principal:
+          Service: s3.amazonaws.com
+
+- iam_policy:
+    aws_access_key: "{{ aws_access_key }}"
+    aws_secret_key: "{{ aws_secret_key }}"
+    iam_type: role
+    iam_name: "{{ s3_role_name }}"
+    policy_name: S3_access_policy
+    policy_document: s3_pol.json
+    skip_duplicates: true
+    state: present
+
+- name: Provision ec2 instance
+  ec2:
+    key_name: "{{ aws_keypair }}"
+    image: "{{ aws_image }}"
+    instance_type: "{{ aws_instance_type }}"
+    aws_access_key: "{{ aws_access_key }}"
+    aws_secret_key: "{{ aws_secret_key }}"
+    region: "{{ aws_region }}"
+    group: "{{ aws_sec_group }}"
+    vpc_subnet_id: "{{ aws_vpc_subnet_id }}"
+    assign_public_ip: yes
+    instance_profile_name: "{{ s3_role_name }}"
+    exact_count: 1
+    count_tag: foo.bar
+    wait: true
+  register: ec2_info

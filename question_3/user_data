@@ -1,0 +1,27 @@
+#!/bin/bash
+
+yum install -y lvm2
+
+vg="ephermeral1"
+lv="logical1"
+fs="ext4"
+blk="`blkid | grep -v xvda | awk -F ":" '{print $1}'`"
+
+umount /mnt
+
+sed '/mnt/d' /etc/fstab -i
+
+for i in ${blk}
+do
+  pvcreate ${i} -f
+done
+
+vgcreate ${vg} ${blk}
+
+lvcreate -l 100%VG -n ${lv} ${vg} -y
+
+mkfs.${fs} /dev/mapper/${vg}-${lv} -q
+
+mount /dev/mapper/${vg}-${lv} /opt
+
+echo `blkid | grep mapper | awk '{print $2}' | sed 's/"//g'` /opt ${fs} defaults 0 0 >> /etc/fstab

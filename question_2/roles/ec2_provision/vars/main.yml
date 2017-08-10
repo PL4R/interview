@@ -1,0 +1,11 @@
+---
+aws_region: "eu-west-2"
+aws_acct_vpc_id: "vpc-xxxxxx"
+aws_sec_group: "SG_name_here"
+aws_instance_type: "t2.micro"
+aws_vpc_subnet_id: "subnet-xxxxxxxx"
+aws_image: "ami-ed100689"
+aws_keypair: "key_pair_name"
+s3_role_name: "S3_Access"
+aws_access_key: "xxxxxxxxxxxx"
+aws_secret_key: "xxxxxxxxxxxx"
